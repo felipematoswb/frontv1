@@ -15,7 +15,7 @@ const INITIAL_PLAYER: Player = {
   gold: 1000, // Give some starting gold to test features
   stats: { strength: 5, defense: 5, agility: 5, endurance: 5 },
   statPoints: 5, // Some points to distribute
-  equipment: { weapon: null, armor: null, accessory: null },
+  equipment: { weapon: null, head: null, chest: null, legs: null, accessory: null },
   inventory: [MOCK_ITEMS.find(i => i.id === 'c1')!, MOCK_ITEMS.find(i => i.id === 'c1')!],
   mercenaries: [],
   squad: [null, null, null],
@@ -36,27 +36,40 @@ const ProgressBar = ({ current, max, color, label }: { current: number, max: num
 
 const HeroAvatar = ({ equipment }: { equipment: Equipment }) => {
   const skinColor = "#fca5a5";
-  const armorColor = equipment.armor?.visualColor || "#3b82f6";
+  const headColor = equipment.head?.visualColor || skinColor;
+  const chestColor = equipment.chest?.visualColor || "#3b82f6";
+  const legsColor = equipment.legs?.visualColor || "#1e3a8a";
   const weaponColor = equipment.weapon?.visualColor || "#9ca3af";
   
   return (
     <div className="relative w-48 h-48 mx-auto bg-yellow-200 border-4 border-black rounded-full overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center">
       <div className="halftone-overlay"></div>
       <svg width="160" height="160" viewBox="0 0 200 200" className="relative z-10">
-        <path d="M 60 80 L 40 180 L 160 180 L 140 80 Z" fill="#ef4444" stroke="#000" strokeWidth="4" />
-        <rect x="70" y="90" width="60" height="70" rx="10" fill={armorColor} stroke="#000" strokeWidth="4" />
+        {/* Legs / Pants */}
+        <path d="M 60 80 L 40 180 L 160 180 L 140 80 Z" fill={legsColor} stroke="#000" strokeWidth="4" />
+        {/* Chest / Shirt */}
+        <rect x="70" y="90" width="60" height="70" rx="10" fill={chestColor} stroke="#000" strokeWidth="4" />
+        {/* Belt */}
         <rect x="65" y="140" width="70" height="15" fill="#eab308" stroke="#000" strokeWidth="4" />
+        {/* Head */}
         <circle cx="100" cy="60" r="35" fill={skinColor} stroke="#000" strokeWidth="4" />
+        {/* Headgear (if equipped, draw over head) */}
+        {equipment.head && <path d="M 60 60 Q 100 20 140 60 Q 100 40 60 60 Z" fill={headColor} stroke="#000" strokeWidth="4" />}
+        {/* Face */}
         <path d="M 65 50 Q 100 70 135 50 L 135 40 Q 100 60 65 40 Z" fill="#000" />
         <circle cx="85" cy="55" r="5" fill="#fff" />
         <circle cx="115" cy="55" r="5" fill="#fff" />
+        {/* Accessory */}
         {equipment.accessory && <circle cx="100" cy="105" r="12" fill={equipment.accessory.visualColor || "#fbbf24"} stroke="#000" strokeWidth="3" />}
-        <path d="M 70 100 L 40 130" stroke={armorColor} strokeWidth="16" strokeLinecap="round" />
+        {/* Left Arm */}
+        <path d="M 70 100 L 40 130" stroke={chestColor} strokeWidth="16" strokeLinecap="round" />
         <path d="M 70 100 L 40 130" stroke="#000" strokeWidth="20" strokeLinecap="round" className="opacity-30" />
         <circle cx="40" cy="130" r="10" fill={skinColor} stroke="#000" strokeWidth="4" />
-        <path d="M 130 100 L 160 130" stroke={armorColor} strokeWidth="16" strokeLinecap="round" />
+        {/* Right Arm */}
+        <path d="M 130 100 L 160 130" stroke={chestColor} strokeWidth="16" strokeLinecap="round" />
         <path d="M 130 100 L 160 130" stroke="#000" strokeWidth="20" strokeLinecap="round" className="opacity-30" />
         <circle cx="160" cy="130" r="10" fill={skinColor} stroke="#000" strokeWidth="4" />
+        {/* Weapon */}
         {equipment.weapon && (
           <g transform="translate(160, 130) rotate(-45)">
             <rect x="-5" y="-40" width="10" height="80" fill={weaponColor} stroke="#000" strokeWidth="3" />
@@ -133,7 +146,9 @@ export default function App() {
     };
 
     applyItemStats(eq.weapon);
-    applyItemStats(eq.armor);
+    applyItemStats(eq.head);
+    applyItemStats(eq.chest);
+    applyItemStats(eq.legs);
     applyItemStats(eq.accessory);
 
     return base;
@@ -511,7 +526,7 @@ export default function App() {
         <div className="comic-panel p-6 md:col-span-1 bg-gray-50">
           <h2 className="comic-title text-2xl mb-4 text-purple-600">Equipped</h2>
           <div className="space-y-4">
-            {(['weapon', 'armor', 'accessory'] as const).map(slot => {
+            {(['weapon', 'head', 'chest', 'legs', 'accessory'] as const).map(slot => {
               const item = player.equipment[slot];
               return (
                 <div key={slot} className="border-4 border-black p-3 bg-white relative"

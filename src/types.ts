@@ -1,6 +1,6 @@
 export type View = 'dashboard' | 'inventory' | 'tavern' | 'expeditions' | 'dungeons' | 'store' | 'blacksmith' | 'market' | 'arena' | 'quests' | 'guild' | 'training';
 
-export type ItemType = 'weapon' | 'armor' | 'accessory' | 'consumable';
+export type ItemType = 'weapon' | 'head' | 'chest' | 'legs' | 'accessory' | 'consumable';
 
 export interface ItemStats {
   strength?: number;
@@ -28,7 +28,9 @@ export interface Item {
 
 export interface Equipment {
   weapon: Item | null;
-  armor: Item | null;
+  head: Item | null;
+  chest: Item | null;
+  legs: Item | null;
   accessory: Item | null;
 }
 
