@@ -2,6 +2,8 @@ export type View = 'dashboard' | 'inventory' | 'tavern' | 'expeditions' | 'dunge
 
 export type ItemType = 'weapon' | 'head' | 'chest' | 'legs' | 'accessory' | 'consumable';
 
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
 export interface ItemStats {
   strength?: number;
   defense?: number;
@@ -24,6 +26,7 @@ export interface Item {
   visualColor?: string;
   visualIcon?: string;
   upgradeLevel?: number;
+  rarity?: Rarity;
 }
 
 export interface Equipment {

@@ -146,6 +146,28 @@ body {
   opacity: 0.5;
 }
 
+/* Utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (max-width: 640px) {
+  .comic-title {
+    letter-spacing: 1px;
+  }
+  .comic-panel {
+    box-shadow: 4px 4px 0px var(--color-comic-dark);
+  }
+  .action-bubble {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
 /* VFX Animations */
 @keyframes floatUpFade {
   0% { transform: translateY(0) scale(0.5); opacity: 0; }
