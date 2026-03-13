@@ -1,6 +1,6 @@
-export type View = 'dashboard' | 'inventory' | 'tavern' | 'expeditions' | 'dungeons' | 'store' | 'blacksmith' | 'market' | 'arena' | 'quests' | 'guild' | 'training';
+export type View = 'dashboard' | 'inventory' | 'tavern' | 'expeditions' | 'dungeons' | 'store' | 'blacksmith' | 'market' | 'arena' | 'quests' | 'guild' | 'training' | 'notifications';
 
-export type ItemType = 'weapon' | 'head' | 'chest' | 'legs' | 'accessory' | 'consumable';
+export type ItemType = 'weapon' | 'head' | 'neck' | 'body' | 'belt' | 'gloves' | 'boots' | 'ring' | 'amulet' | 'badge' | 'consumable';
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
@@ -16,6 +16,7 @@ export interface ItemStats {
 
 export interface Item {
   id: string;
+  instanceId?: string;
   name: string;
   type: ItemType;
   stats?: ItemStats;
@@ -32,9 +33,14 @@ export interface Item {
 export interface Equipment {
   weapon: Item | null;
   head: Item | null;
-  chest: Item | null;
-  legs: Item | null;
-  accessory: Item | null;
+  neck: Item | null;
+  body: Item | null;
+  belt: Item | null;
+  gloves: Item | null;
+  boots: Item | null;
+  ring: Item | null;
+  amulet: Item | null;
+  badge: Item | null;
 }
 
 export interface Stats {
@@ -89,12 +95,15 @@ export interface Dungeon {
   energyCost: number;
 }
 
+export type GuildRole = 'leader' | 'officer' | 'member';
+
 export interface Guild {
   id: string;
   name: string;
   level: number;
+  prestige: number;
   gold: number;
-  members: string[];
+  members: { name: string; role: GuildRole }[];
   buildings: {
     hall: number;
     training: number;

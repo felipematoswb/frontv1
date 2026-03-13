@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Swords, Zap, Heart, Coins, Star, Crosshair, Activity, ShoppingBag, Map, User, Backpack, FlaskConical, Hammer, Users, Target, Skull, Tent, Scroll } from 'lucide-react';
-import { View, Item, ItemStats, Equipment, Stats, Player, Job, Quest, Mob, Dungeon, Mercenary, Guild, Rarity } from './types';
+import { Shield, Swords, Zap, Heart, Coins, Star, Crosshair, Activity, ShoppingBag, Map, User, Backpack, FlaskConical, Hammer, Users, Target, Skull, Tent, Scroll, Bell, Menu, X } from 'lucide-react';
+import { View, Item, ItemStats, Equipment, Stats, Player, Job, Quest, Mob, Dungeon, Mercenary, Guild, Rarity, GuildRole } from './types';
 import { MOCK_ITEMS, MOCK_JOBS, MOCK_MOBS, MOCK_DUNGEONS, MOCK_QUESTS, MOCK_MERCENARIES, MOCK_GUILDS, MOCK_MARKET, MOCK_PVP_OPPONENTS } from './data';
+
+const createItemInstance = (item: Item): Item => ({
+  ...item,
+  instanceId: `${item.id}-${Math.random().toString(36).substr(2, 9)}`
+});
 
 const INITIAL_PLAYER: Player = {
   name: 'Nova Strike',
@@ -12,11 +17,14 @@ const INITIAL_PLAYER: Player = {
   maxHp: 100,
   energy: 50,
   maxEnergy: 50,
-  gold: 1000, // Give some starting gold to test features
+  gold: 100000000, // Give some starting gold to test features
   stats: { strength: 5, defense: 5, agility: 5, endurance: 5 },
   statPoints: 5, // Some points to distribute
-  equipment: { weapon: null, head: null, chest: null, legs: null, accessory: null },
-  inventory: [MOCK_ITEMS.find(i => i.id === 'c1')!, MOCK_ITEMS.find(i => i.id === 'c1')!],
+  equipment: { weapon: null, head: null, neck: null, body: null, belt: null, gloves: null, boots: null, ring: null, amulet: null, badge: null },
+  inventory: [
+    createItemInstance(MOCK_ITEMS.find(i => i.id === 'c1')!),
+    createItemInstance(MOCK_ITEMS.find(i => i.id === 'c1')!)
+  ],
   mercenaries: [],
   squad: [null, null, null],
   guildId: null,
@@ -37,20 +45,20 @@ const ProgressBar = ({ current, max, color, label }: { current: number, max: num
 const HeroAvatar = ({ equipment }: { equipment: Equipment }) => {
   const skinColor = "#fca5a5";
   const headColor = equipment.head?.visualColor || skinColor;
-  const chestColor = equipment.chest?.visualColor || "#3b82f6";
-  const legsColor = equipment.legs?.visualColor || "#1e3a8a";
+  const bodyColor = equipment.body?.visualColor || "#3b82f6";
+  const bootsColor = equipment.boots?.visualColor || "#1e3a8a";
   const weaponColor = equipment.weapon?.visualColor || "#9ca3af";
   
   return (
-    <div className="relative w-32 h-32 md:w-48 md:h-48 mx-auto bg-yellow-200 border-4 border-black rounded-full overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center">
+    <div className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48 mx-auto bg-yellow-200 border-4 border-black rounded-full overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center">
       <div className="halftone-overlay"></div>
       <svg width="100%" height="100%" viewBox="0 0 200 200" className="relative z-10 p-4 md:p-0">
-        {/* Legs / Pants */}
-        <path d="M 60 80 L 40 180 L 160 180 L 140 80 Z" fill={legsColor} stroke="#000" strokeWidth="4" />
-        {/* Chest / Shirt */}
-        <rect x="70" y="90" width="60" height="70" rx="10" fill={chestColor} stroke="#000" strokeWidth="4" />
+        {/* Legs / Boots */}
+        <path d="M 60 80 L 40 180 L 160 180 L 140 80 Z" fill={bootsColor} stroke="#000" strokeWidth="4" />
+        {/* Chest / Body */}
+        <rect x="70" y="90" width="60" height="70" rx="10" fill={bodyColor} stroke="#000" strokeWidth="4" />
         {/* Belt */}
-        <rect x="65" y="140" width="70" height="15" fill="#eab308" stroke="#000" strokeWidth="4" />
+        <rect x="65" y="140" width="70" height="15" fill={equipment.belt?.visualColor || "#eab308"} stroke="#000" strokeWidth="4" />
         {/* Head */}
         <circle cx="100" cy="60" r="35" fill={skinColor} stroke="#000" strokeWidth="4" />
         {/* Headgear (if equipped, draw over head) */}
@@ -60,13 +68,13 @@ const HeroAvatar = ({ equipment }: { equipment: Equipment }) => {
         <circle cx="85" cy="55" r="5" fill="#fff" />
         <circle cx="115" cy="55" r="5" fill="#fff" />
         {/* Accessory */}
-        {equipment.accessory && <circle cx="100" cy="105" r="12" fill={equipment.accessory.visualColor || "#fbbf24"} stroke="#000" strokeWidth="3" />}
+        {equipment.amulet && <circle cx="100" cy="105" r="12" fill={equipment.amulet.visualColor || "#fbbf24"} stroke="#000" strokeWidth="3" />}
         {/* Left Arm */}
-        <path d="M 70 100 L 40 130" stroke={chestColor} strokeWidth="16" strokeLinecap="round" />
+        <path d="M 70 100 L 40 130" stroke={bodyColor} strokeWidth="16" strokeLinecap="round" />
         <path d="M 70 100 L 40 130" stroke="#000" strokeWidth="20" strokeLinecap="round" className="opacity-30" />
         <circle cx="40" cy="130" r="10" fill={skinColor} stroke="#000" strokeWidth="4" />
         {/* Right Arm */}
-        <path d="M 130 100 L 160 130" stroke={chestColor} strokeWidth="16" strokeLinecap="round" />
+        <path d="M 130 100 L 160 130" stroke={bodyColor} strokeWidth="16" strokeLinecap="round" />
         <path d="M 130 100 L 160 130" stroke="#000" strokeWidth="20" strokeLinecap="round" className="opacity-30" />
         <circle cx="160" cy="130" r="10" fill={skinColor} stroke="#000" strokeWidth="4" />
         {/* Weapon */}
@@ -83,7 +91,11 @@ const HeroAvatar = ({ equipment }: { equipment: Equipment }) => {
 
 export default function App() {
   const [player, setPlayer] = useState<Player>(INITIAL_PLAYER);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authForm, setAuthForm] = useState({ name: '', password: '' });
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dungeonState, setDungeonState] = useState<{ dungeon: Dungeon, currentStage: number } | null>(null);
   const [marketItems, setMarketItems] = useState(MOCK_MARKET);
   const [guilds, setGuilds] = useState(MOCK_GUILDS);
@@ -170,6 +182,18 @@ export default function App() {
     applyItemStats(eq.chest);
     applyItemStats(eq.legs);
     applyItemStats(eq.accessory);
+
+    // Guild Training Grounds Bonus
+    if (player.guildId) {
+      const guild = guilds.find(g => g.id === player.guildId);
+      if (guild && guild.buildings.training > 1) {
+        const bonus = (guild.buildings.training - 1) * 2;
+        base.strength += bonus;
+        base.defense += bonus;
+        base.agility += bonus;
+        base.endurance += bonus;
+      }
+    }
 
     return base;
   };
@@ -372,7 +396,7 @@ export default function App() {
       setPlayer(p => ({
         ...p,
         gold: p.gold - item.price,
-        inventory: [...p.inventory, { ...item, id: item.id + '-' + Date.now(), upgradeLevel: 0 }]
+        inventory: [...p.inventory, { ...createItemInstance(item), upgradeLevel: 0 }]
       }));
       logMessage(`BOUGHT ${item.name} for ${item.price} Gold!`);
     }
@@ -382,7 +406,7 @@ export default function App() {
     if (item.type === 'consumable') return;
     setPlayer(p => {
       const currentEquipped = p.equipment[item.type as keyof Equipment];
-      const newInventory = p.inventory.filter(i => i.id !== item.id);
+      const newInventory = p.inventory.filter(i => i.instanceId !== item.instanceId);
       if (currentEquipped) newInventory.push(currentEquipped);
       return { ...p, inventory: newInventory, equipment: { ...p.equipment, [item.type]: item } };
     });
@@ -403,7 +427,7 @@ export default function App() {
       let newEnergy = p.energy;
       if (item.effect === 'heal' && item.effectValue) newHp = Math.min(p.maxHp, p.hp + item.effectValue);
       else if (item.effect === 'energy' && item.effectValue) newEnergy = Math.min(p.maxEnergy, p.energy + item.effectValue);
-      return { ...p, hp: newHp, energy: newEnergy, inventory: p.inventory.filter(i => i.id !== item.id) };
+      return { ...p, hp: newHp, energy: newEnergy, inventory: p.inventory.filter(i => i.instanceId !== item.instanceId) };
     });
   };
 
@@ -412,20 +436,20 @@ export default function App() {
     const cost = 100 * ((item.upgradeLevel || 0) + 1);
     if (player.gold >= cost) {
       setPlayer(p => {
-        const newInventory = p.inventory.map(i => i.id === item.id ? { ...i, upgradeLevel: (i.upgradeLevel || 0) + 1 } : i);
+        const newInventory = p.inventory.map(i => i.instanceId === item.instanceId ? { ...i, upgradeLevel: (i.upgradeLevel || 0) + 1 } : i);
         return { ...p, gold: p.gold - cost, inventory: newInventory };
       });
       logMessage(`Upgraded ${item.name} to +${(item.upgradeLevel || 0) + 1} for ${cost} gold!`);
       
       // Trigger visual effects
-      setUpgradingItemId(item.id);
-      setRecentUpgrades(prev => new Set(prev).add(item.id));
+      setUpgradingItemId(item.instanceId || item.id);
+      setRecentUpgrades(prev => new Set(prev).add(item.instanceId || item.id));
       
       setTimeout(() => setUpgradingItemId(null), 1000);
       setTimeout(() => {
         setRecentUpgrades(prev => {
           const next = new Set(prev);
-          next.delete(item.id);
+          next.delete(item.instanceId || item.id);
           return next;
         });
       }, 5000);
@@ -455,14 +479,14 @@ export default function App() {
   const buyMarketItem = (listingId: string) => {
     const listing = marketItems.find(m => m.id === listingId);
     if (listing && player.gold >= listing.price) {
-      setPlayer(p => ({ ...p, gold: p.gold - listing.price, inventory: [...p.inventory, { ...listing.item, id: listing.item.id + '-' + Date.now() }] }));
+      setPlayer(p => ({ ...p, gold: p.gold - listing.price, inventory: [...p.inventory, createItemInstance(listing.item)] }));
       setMarketItems(prev => prev.filter(m => m.id !== listingId));
       logMessage(`Bought ${listing.item.name} from Market for ${listing.price} gold.`);
     }
   };
 
   const sellItem = (item: Item, price: number) => {
-    setPlayer(p => ({ ...p, inventory: p.inventory.filter(i => i.id !== item.id) }));
+    setPlayer(p => ({ ...p, inventory: p.inventory.filter(i => i.instanceId !== item.instanceId) }));
     setMarketItems(prev => [...prev, { id: 'mk-' + Date.now(), item, seller: player.name, price }]);
     logMessage(`Listed ${item.name} on Market for ${price} gold.`);
   };
@@ -470,11 +494,48 @@ export default function App() {
   // --- Guilds ---
   const createGuild = (name: string) => {
     if (player.gold >= 5000 && !player.guildId) {
-      const newGuild: Guild = { id: 'g-' + Date.now(), name, level: 1, gold: 0, members: [player.name], buildings: { hall: 1, training: 1 } };
+      const newGuild: Guild = { id: 'g-' + Date.now(), name, level: 1, prestige: 100, gold: 0, members: [{ name: player.name, role: 'leader' }], buildings: { hall: 1, training: 1 } };
       setGuilds(prev => [...prev, newGuild]);
       setPlayer(p => ({ ...p, gold: p.gold - 5000, guildId: newGuild.id }));
       logMessage(`Created Guild: ${name}`);
     }
+  };
+
+  const getPlayerRole = (guild: Guild) => {
+    return guild.members.find(m => m.name === player.name)?.role;
+  };
+
+  const inviteMember = (name: string) => {
+    if (!player.guildId) return;
+    const guild = guilds.find(g => g.id === player.guildId);
+    if (!guild) return;
+    const role = getPlayerRole(guild);
+    if (role !== 'leader' && role !== 'officer') return;
+
+    setGuilds(prev => prev.map(g => g.id === player.guildId ? { ...g, members: [...g.members, { name, role: 'member' }] } : g));
+    logMessage(`Invited ${name} to the guild.`);
+  };
+
+  const kickMember = (name: string) => {
+    if (!player.guildId) return;
+    const guild = guilds.find(g => g.id === player.guildId);
+    if (!guild) return;
+    const role = getPlayerRole(guild);
+    if (role !== 'leader') return;
+
+    setGuilds(prev => prev.map(g => g.id === player.guildId ? { ...g, members: g.members.filter(m => m.name !== name) } : g));
+    logMessage(`Kicked ${name} from the guild.`);
+  };
+
+  const changeRole = (name: string, newRole: GuildRole) => {
+    if (!player.guildId) return;
+    const guild = guilds.find(g => g.id === player.guildId);
+    if (!guild) return;
+    const role = getPlayerRole(guild);
+    if (role !== 'leader') return;
+
+    setGuilds(prev => prev.map(g => g.id === player.guildId ? { ...g, members: g.members.map(m => m.name === name ? { ...m, role: newRole } : m) } : g));
+    logMessage(`Changed ${name}'s role to ${newRole}.`);
   };
 
   const donateGuild = (amount: number) => {
@@ -482,6 +543,38 @@ export default function App() {
       setGuilds(prev => prev.map(g => g.id === player.guildId ? { ...g, gold: g.gold + amount } : g));
       setPlayer(p => ({ ...p, gold: p.gold - amount }));
       logMessage(`Donated ${amount} gold to Guild.`);
+    }
+  };
+
+  const upgradeGuildBuilding = (building: 'hall' | 'training') => {
+    if (!player.guildId) return;
+    const guild = guilds.find(g => g.id === player.guildId);
+    if (!guild) return;
+
+    const currentLevel = guild.buildings[building];
+    const cost = building === 'hall' ? currentLevel * 5000 : currentLevel * 3000;
+
+    if (guild.gold >= cost) {
+      setGuilds(prev => prev.map(g => {
+        if (g.id === player.guildId) {
+          const newBuildings = { ...g.buildings, [building]: currentLevel + 1 };
+          let newLevel = g.level;
+          let newPrestige = g.prestige;
+          
+          if (building === 'hall') {
+            newLevel += 1;
+            newPrestige += 250;
+          } else if (building === 'training') {
+            newPrestige += 100;
+          }
+
+          return { ...g, gold: g.gold - cost, buildings: newBuildings, level: newLevel, prestige: newPrestige };
+        }
+        return g;
+      }));
+      logMessage(`Upgraded ${building === 'hall' ? 'Guild Hall' : 'Training Grounds'} to Level ${currentLevel + 1}!`);
+    } else {
+      logMessage(`Not enough Guild Gold! Need ${cost}.`);
     }
   };
 
@@ -506,34 +599,37 @@ export default function App() {
   const renderDashboard = () => {
     const totalStats = getTotalStats();
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="comic-panel p-4 md:p-6 flex flex-col items-center justify-center bg-blue-50">
-          <div className="halftone-overlay"></div>
-          <h2 className="comic-title text-2xl md:text-3xl mb-4 md:mb-6 text-blue-600 relative z-10">Appearance</h2>
-          <HeroAvatar equipment={player.equipment} />
-        </div>
-
-        <div className="comic-panel p-4 md:p-6">
-          <div className="halftone-overlay"></div>
-          <div className="flex justify-between items-center mb-4 relative z-10">
-            <h2 className="comic-title text-2xl md:text-3xl text-red-600">Hero Stats</h2>
-            {player.statPoints > 0 && <span className="bg-yellow-400 text-black font-bangers px-2 py-1 animate-pulse text-sm">Points: {player.statPoints}</span>}
+      <div className="space-y-6">
+        <div className="action-bubble mb-4 bg-blue-400 text-white">HERO</div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="comic-panel p-4 md:p-6 flex flex-col items-center justify-center bg-blue-50">
+            <div className="halftone-overlay"></div>
+            <h2 className="comic-title text-2xl md:text-3xl mb-4 md:mb-6 text-blue-600 relative z-10">Appearance</h2>
+            <HeroAvatar equipment={player.equipment} />
           </div>
-          <div className="space-y-3 md:space-y-4 relative z-10">
-            {(['strength', 'defense', 'agility', 'endurance'] as const).map(stat => (
-              <div key={stat} className="flex justify-between items-center border-b-2 border-black pb-2">
-                <span className="font-bangers text-lg md:text-xl flex items-center gap-2 capitalize">{stat}</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-bangers text-lg md:text-2xl">{totalStats[stat]} <span className="text-[9px] md:text-sm text-green-600">({player.stats[stat]} base)</span></span>
-                  {player.statPoints > 0 && (
-                    <button onClick={() => distributePoint(stat)} className="bg-green-500 text-white font-bold w-7 h-7 md:w-6 md:h-6 rounded flex items-center justify-center hover:bg-green-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]">+</button>
-                  )}
-                  <button onClick={() => trainStatGold(stat)} className="bg-yellow-400 text-black font-bold text-[10px] md:text-xs px-2 py-1.5 md:py-1 rounded hover:bg-yellow-500 flex items-center gap-1 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]" title={`Train for ${player.stats[stat] * 10} gold`}>
-                    <Coins size={12}/> {player.stats[stat] * 10}
-                  </button>
+
+          <div className="comic-panel p-4 md:p-6">
+            <div className="halftone-overlay"></div>
+            <div className="flex justify-between items-center mb-4 relative z-10">
+              <h2 className="comic-title text-2xl md:text-3xl text-red-600">Hero Stats</h2>
+              {player.statPoints > 0 && <span className="bg-yellow-400 text-black font-bangers px-2 py-1 animate-pulse text-sm">Points: {player.statPoints}</span>}
+            </div>
+            <div className="space-y-3 md:space-y-4 relative z-10">
+              {(['strength', 'defense', 'agility', 'endurance'] as const).map(stat => (
+                <div key={stat} className="flex justify-between items-center border-b-2 border-black pb-2">
+                  <span className="font-bangers text-lg md:text-xl flex items-center gap-2 capitalize">{stat}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bangers text-lg md:text-2xl">{totalStats[stat]} <span className="text-[9px] md:text-sm text-green-600">({player.stats[stat]} base)</span></span>
+                    {player.statPoints > 0 && (
+                      <button onClick={() => distributePoint(stat)} className="bg-green-500 text-white font-bold w-7 h-7 md:w-6 md:h-6 rounded flex items-center justify-center hover:bg-green-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]">+</button>
+                    )}
+                    <button onClick={() => trainStatGold(stat)} className="bg-yellow-400 text-black font-bold text-[10px] md:text-xs px-2 py-1.5 md:py-1 rounded hover:bg-yellow-500 flex items-center gap-1 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]" title={`Train for ${player.stats[stat] * 10} gold`}>
+                      <Coins size={12}/> {player.stats[stat] * 10}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -548,7 +644,7 @@ export default function App() {
         <div className="comic-panel p-4 md:p-6 lg:col-span-1 bg-gray-50">
           <h2 className="comic-title text-xl md:text-2xl mb-4 text-purple-600">Equipped</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 md:gap-4">
-            {(['weapon', 'head', 'chest', 'legs', 'accessory'] as const).map(slot => {
+            {(['weapon', 'head', 'neck', 'body', 'belt', 'gloves', 'boots', 'ring', 'amulet', 'badge'] as const).map(slot => {
               const item = player.equipment[slot];
               return (
                 <div key={slot} className="border-4 border-black p-3 bg-white relative cursor-pointer"
@@ -584,8 +680,8 @@ export default function App() {
               {player.inventory.map(item => {
                 const rarityColor = item.rarity ? RARITY_CONFIG[item.rarity].color : '#94a3b8';
                 return (
-                  <div key={item.id} 
-                    className={`comic-panel p-4 flex flex-col justify-between transition-all duration-500 cursor-pointer ${recentUpgrades.has(item.id) ? 'ring-4 ring-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)] scale-105' : ''}`}
+                  <div key={item.instanceId || item.id} 
+                    className={`comic-panel p-4 flex flex-col justify-between transition-all duration-500 cursor-pointer ${recentUpgrades.has(item.instanceId || item.id) ? 'ring-4 ring-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)] scale-105' : ''}`}
                     style={{ borderLeftWidth: '8px', borderLeftColor: rarityColor }}
                     onMouseMove={(e) => handleMouseMove(e, item)}
                     onMouseLeave={handleMouseLeave}
@@ -749,12 +845,12 @@ export default function App() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {player.inventory.filter(i => i.type !== 'consumable').map(item => {
           const cost = 100 * ((item.upgradeLevel || 0) + 1);
-          const isUpgrading = upgradingItemId === item.id;
-          const isRecent = recentUpgrades.has(item.id);
+          const isUpgrading = upgradingItemId === (item.instanceId || item.id);
+          const isRecent = recentUpgrades.has(item.instanceId || item.id);
           const rarityColor = item.rarity ? RARITY_CONFIG[item.rarity].color : '#94a3b8';
           
           return (
-            <div key={item.id} className={`comic-panel p-4 flex flex-col justify-between bg-gray-100 relative overflow-hidden transition-all duration-300 ${isRecent ? 'ring-4 ring-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]' : ''}`}
+            <div key={item.instanceId || item.id} className={`comic-panel p-4 flex flex-col justify-between bg-gray-100 relative overflow-hidden transition-all duration-300 ${isRecent ? 'ring-4 ring-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]' : ''}`}
               style={{ borderLeftWidth: '8px', borderLeftColor: rarityColor }}
               onMouseMove={(e) => handleMouseMove(e, item)}
               onMouseLeave={handleMouseLeave}
@@ -868,6 +964,15 @@ export default function App() {
     </div>
   );
 
+  const renderNotifications = () => (
+    <div className="space-y-6">
+      <div className="action-bubble mb-4 bg-blue-400 text-white">NOTIFICATIONS</div>
+      <div className="comic-panel p-6 bg-white">
+        <p className="font-bangers text-xl text-gray-500">No new notifications.</p>
+      </div>
+    </div>
+  );
+
   const renderGuild = () => {
     if (!player.guildId) {
       return (
@@ -884,6 +989,7 @@ export default function App() {
 
     const guild = guilds.find(g => g.id === player.guildId);
     if (!guild) return null;
+    const playerRole = guild.members.find(m => m.name === player.name)?.role;
 
     return (
       <div className="space-y-6">
@@ -892,21 +998,94 @@ export default function App() {
           <h2 className="comic-title text-2xl md:text-4xl mb-2 text-indigo-800 flex flex-wrap items-center gap-2">
             {guild.name} 
             <span className="text-sm md:text-xl bg-black text-white px-2 py-1 transform -rotate-3 inline-block">LVL {guild.level}</span>
+            <span className="text-sm md:text-xl bg-indigo-600 text-white px-2 py-1 transform rotate-2 inline-block">PRESTIGE: {guild.prestige}</span>
           </h2>
           <p className="font-bangers text-xl md:text-2xl text-yellow-600 mb-6 flex items-center gap-2"><Coins size={20}/> Treasury: {guild.gold}</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div className="border-4 border-black p-4 bg-white">
-              <h3 className="font-bangers text-xl md:text-2xl mb-4 border-b-2 border-black pb-2">Members</h3>
-              <ul className="font-bold space-y-2 text-sm md:text-base">
-                {guild.members.map(m => <li key={m} className="flex items-center gap-2"><User size={16}/> {m}</li>)}
-              </ul>
+              <h3 className="font-bangers text-xl md:text-2xl mb-4 border-b-2 border-black pb-2">Buildings</h3>
+              <div className="space-y-4">
+                <div className="bg-indigo-100 p-3 border-2 border-black">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-bangers text-lg">Guild Hall (LVL {guild.buildings.hall})</h4>
+                    <span className="text-xs font-bold text-indigo-600">Increases Max Members</span>
+                  </div>
+                  <p className="text-xs mb-3 text-gray-600">The heart of your guild. Upgrading this increases the guild's prestige and level.</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-bangers text-sm text-yellow-600 flex items-center gap-1"><Coins size={14}/> {guild.buildings.hall * 5000}</span>
+                    <button 
+                      onClick={() => upgradeGuildBuilding('hall')} 
+                      disabled={guild.gold < guild.buildings.hall * 5000}
+                      className={`comic-button comic-button-blue text-[10px] py-1 px-3 ${guild.gold < guild.buildings.hall * 5000 ? 'opacity-50' : ''}`}
+                    >
+                      UPGRADE
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-green-100 p-3 border-2 border-black">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-bangers text-lg">Training Grounds (LVL {guild.buildings.training})</h4>
+                    <span className="text-xs font-bold text-green-600">+{ (guild.buildings.training - 1) * 2 } All Stats</span>
+                  </div>
+                  <p className="text-xs mb-3 text-gray-600">A place for heroes to hone their skills. Provides a passive bonus to all members.</p>
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <span className="font-bangers text-sm text-yellow-600 flex items-center gap-1"><Coins size={14}/> {guild.buildings.training * 3000}</span>
+                      <span className="text-[10px] text-green-700 font-bold">Next: +{ guild.buildings.training * 2 } All Stats</span>
+                    </div>
+                    <button 
+                      onClick={() => upgradeGuildBuilding('training')} 
+                      disabled={guild.gold < guild.buildings.training * 3000}
+                      className={`comic-button comic-button-green text-[10px] py-1 px-3 ${guild.gold < guild.buildings.training * 3000 ? 'opacity-50' : ''}`}
+                    >
+                      UPGRADE
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="border-4 border-black p-4 bg-white">
-              <h3 className="font-bangers text-xl md:text-2xl mb-4 border-b-2 border-black pb-2">Donate</h3>
-              <div className="flex gap-2">
-                <button onClick={() => donateGuild(100)} className="comic-button comic-button-yellow flex-1 text-xs md:text-sm py-2">100 G</button>
-                <button onClick={() => donateGuild(1000)} className="comic-button comic-button-yellow flex-1 text-xs md:text-sm py-2">1000 G</button>
+
+            <div className="space-y-4 md:space-y-6">
+              <div className="border-4 border-black p-4 bg-white">
+                <h3 className="font-bangers text-xl md:text-2xl mb-4 border-b-2 border-black pb-2">Members</h3>
+                <ul className="font-bold space-y-2 text-sm md:text-base">
+                  {guild.members.map(m => (
+                    <li key={m.name} className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <User size={16}/> {m.name} <span className="text-xs text-indigo-600">({m.role})</span>
+                      </div>
+                      {m.name !== player.name && (
+                        <div className="flex gap-1">
+                          {playerRole === 'leader' && (
+                            <button onClick={() => changeRole(m.name, m.role === 'member' ? 'officer' : 'member')} className="bg-blue-500 text-white px-2 py-1 rounded text-[10px]">Role</button>
+                          )}
+                          {playerRole === 'leader' && (
+                            <button onClick={() => kickMember(m.name)} className="bg-red-500 text-white px-2 py-1 rounded text-[10px]">Kick</button>
+                          )}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                {(playerRole === 'leader' || playerRole === 'officer') && (
+                  <div className="mt-4 flex gap-2">
+                    <input type="text" placeholder="Member Name" className="border-2 border-black p-1 flex-1 text-sm" id="invite-input" />
+                    <button onClick={() => {
+                      const input = document.getElementById('invite-input') as HTMLInputElement;
+                      if (input.value) inviteMember(input.value);
+                    }} className="comic-button comic-button-blue text-xs py-1 px-2">INVITE</button>
+                  </div>
+                )}
+              </div>
+              <div className="border-4 border-black p-4 bg-white">
+                <h3 className="font-bangers text-xl md:text-2xl mb-4 border-b-2 border-black pb-2">Donate</h3>
+                <p className="text-xs mb-3 text-gray-500 italic">Contribute gold from your personal stash to the Guild Treasury for upgrades.</p>
+                <div className="flex gap-2">
+                  <button onClick={() => donateGuild(100)} className="comic-button comic-button-yellow flex-1 text-xs md:text-sm py-2">100 G</button>
+                  <button onClick={() => donateGuild(1000)} className="comic-button comic-button-yellow flex-1 text-xs md:text-sm py-2">1000 G</button>
+                </div>
               </div>
             </div>
           </div>
@@ -983,17 +1162,126 @@ export default function App() {
     );
   };
 
+  const handleAuth = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authForm.name.trim()) {
+      logMessage("Please enter a name!");
+      return;
+    }
+    
+    if (authMode === 'register') {
+      setPlayer(p => ({ ...p, name: authForm.name }));
+      logMessage(`Welcome, ${authForm.name}! Account created.`);
+    } else {
+      setPlayer(p => ({ ...p, name: authForm.name }));
+      logMessage(`Welcome back, ${authForm.name}!`);
+    }
+    setIsAuthenticated(true);
+  };
+
+  const renderAuth = () => (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-yellow-50">
+      <div className="halftone-overlay opacity-20"></div>
+      <div className="comic-panel p-8 w-full max-w-md bg-white relative z-10">
+        <div className="text-center mb-8">
+          <h1 className="comic-title text-5xl text-blue-600 mb-2 transform -rotate-2">HERO RPG</h1>
+          <div className="font-bangers text-xl bg-black text-white px-4 py-1 inline-block transform rotate-1">COMIC ADVENTURE</div>
+        </div>
+
+        <form onSubmit={handleAuth} className="space-y-6">
+          <div className="space-y-2">
+            <label className="font-bangers text-xl flex items-center gap-2">
+              <User size={20} /> HERO NAME
+            </label>
+            <input 
+              type="text" 
+              value={authForm.name}
+              onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+              className="w-full border-4 border-black p-3 font-bold text-lg focus:outline-none focus:ring-4 focus:ring-blue-400 transition-all"
+              placeholder="Enter your name..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="font-bangers text-xl flex items-center gap-2">
+              <Shield size={20} /> SECRET CODE
+            </label>
+            <input 
+              type="password" 
+              value={authForm.password}
+              onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+              className="w-full border-4 border-black p-3 font-bold text-lg focus:outline-none focus:ring-4 focus:ring-blue-400 transition-all"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button type="submit" className="comic-button comic-button-blue w-full text-2xl py-4 flex items-center justify-center gap-3">
+            {authMode === 'login' ? <Zap size={24} /> : <Star size={24} />}
+            {authMode === 'login' ? 'ENTER WORLD' : 'CREATE HERO'}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center">
+          <button 
+            onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+            className="font-bangers text-lg text-gray-600 hover:text-blue-600 transition-colors underline underline-offset-4"
+          >
+            {authMode === 'login' ? "NEW HERO? REGISTER HERE" : "ALREADY A HERO? LOGIN HERE"}
+          </button>
+        </div>
+
+        <div className="mt-8 pt-8 border-t-4 border-black border-dashed flex justify-center gap-6 opacity-50">
+          <Swords size={32} />
+          <Skull size={32} />
+          <Coins size={32} />
+        </div>
+      </div>
+    </div>
+  );
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        {renderAuth()}
+        {/* Visual Log / Notifications for Auth */}
+        <div className="fixed bottom-6 right-4 left-4 md:left-auto md:w-80 z-[110] pointer-events-none space-y-2">
+          {messages.map(m => (
+            <div key={m.id} className="bg-black text-white p-3 border-2 border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] font-bangers text-sm md:text-base animate-slide-in pointer-events-auto">
+              {m.text}
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
+
   return (
-    <div className="min-h-screen p-2 md:p-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-6 pb-24 lg:pb-8">
+    <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-6 pb-24 lg:pb-8">
       {/* Header */}
       <header className="comic-panel p-3 md:p-6 bg-white flex flex-col lg:flex-row justify-between items-center gap-3 md:gap-4">
         <div className="flex items-center gap-3 md:gap-4 w-full lg:w-auto">
           <div className="w-10 h-10 md:w-16 md:h-16 bg-blue-500 border-4 border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,1)] shrink-0">
             <User size={20} className="md:w-8 md:h-8" color="white" />
           </div>
-          <div>
-            <h1 className="comic-title text-xl md:text-4xl text-blue-600 leading-tight">{player.name}</h1>
-            <div className="font-bangers text-[10px] md:text-xl bg-black text-white px-2 inline-block transform -skew-x-12">LEVEL {player.level}</div>
+          <div className="flex-1">
+            <div className="flex items-center justify-between lg:justify-start gap-2">
+              <h1 className="comic-title text-xl md:text-4xl text-blue-600 leading-tight">{player.name}</h1>
+              <button 
+                onClick={() => setIsAuthenticated(false)}
+                className="lg:hidden font-bangers text-xs text-red-500 underline"
+              >
+                LOGOUT
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="font-bangers text-[10px] md:text-xl bg-black text-white px-2 inline-block transform -skew-x-12">LEVEL {player.level}</div>
+              <button 
+                onClick={() => setIsAuthenticated(false)}
+                className="hidden lg:block font-bangers text-sm text-red-500 hover:text-red-700 transition-colors"
+              >
+                [ LOGOUT ]
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1009,20 +1297,41 @@ export default function App() {
 
       <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
         {/* Sidebar Navigation - Bottom bar on mobile, sidebar on desktop */}
-        <nav className="fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:w-64 flex flex-row lg:flex-col gap-2 bg-black p-2 lg:p-4 lg:rounded-lg shadow-[0px_-4px_10px_rgba(0,0,0,0.3)] lg:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] h-fit sticky lg:top-4 overflow-x-auto lg:overflow-x-visible no-scrollbar z-[80]">
-          <h3 className="hidden lg:block font-bangers text-2xl text-yellow-400 mb-2 border-b-2 border-gray-700 pb-2 text-center">COMMAND CENTER</h3>
+        <nav className="fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:w-64 bg-white p-2 lg:p-4 lg:rounded-lg shadow-[0px_-4px_10px_rgba(0,0,0,0.1)] lg:shadow-[4px_4px_0px_rgba(0,0,0,0.2)] border-2 border-black h-fit sticky lg:top-4 z-[80]">
+          {/* Mobile: Burger menu */}
+          <div className="lg:hidden flex justify-between items-center px-2 py-1">
+            <span className="font-bangers text-blue-600 text-sm uppercase">{currentView}</span>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-black p-1">
+              {isMenuOpen ? <X size={24}/> : <Menu size={24}/>}
+            </button>
+          </div>
           
-          <button onClick={() => setCurrentView('dashboard')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'dashboard' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Activity size={16}/> Hero</button>
-          <button onClick={() => setCurrentView('inventory')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'inventory' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Backpack size={16}/> Items</button>
-          <button onClick={() => setCurrentView('tavern')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'tavern' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Tent size={16}/> Jobs</button>
-          <button onClick={() => setCurrentView('expeditions')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'expeditions' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Map size={16}/> Map</button>
-          <button onClick={() => setCurrentView('dungeons')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'dungeons' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Skull size={16}/> Dungeon</button>
-          <button onClick={() => setCurrentView('arena')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'arena' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Swords size={16}/> PvP</button>
-          <button onClick={() => setCurrentView('quests')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'quests' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Scroll size={16}/> Quests</button>
-          <button onClick={() => setCurrentView('store')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'store' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><ShoppingBag size={16}/> Store</button>
-          <button onClick={() => setCurrentView('blacksmith')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'blacksmith' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Hammer size={16}/> Smith</button>
-          <button onClick={() => setCurrentView('market')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'market' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Coins size={16}/> Market</button>
-          <button onClick={() => setCurrentView('guild')} className={`px-3 py-2 lg:px-4 lg:py-3 font-bangers text-xs lg:text-xl uppercase whitespace-nowrap ${currentView === 'guild' ? 'bg-white text-black transform scale-105' : 'text-white hover:bg-gray-800'} transition-all flex items-center gap-2 lg:gap-3 rounded`}><Users size={16}/> Guild</button>
+          {/* Menu content: Hidden on mobile unless open, always visible on desktop */}
+          <div className={`${isMenuOpen ? 'flex' : 'hidden'} lg:flex flex-col gap-2 mt-2 lg:mt-0 overflow-y-auto max-h-[60vh] lg:max-h-none`}>
+            <h3 className="hidden lg:block font-bangers text-2xl text-blue-600 mb-2 border-b-2 border-gray-200 pb-2 text-center">COMMAND CENTER</h3>
+            {[
+              { view: 'dashboard', icon: Activity, label: 'Hero' },
+              { view: 'inventory', icon: Backpack, label: 'Items' },
+              { view: 'tavern', icon: Tent, label: 'Jobs' },
+              { view: 'expeditions', icon: Map, label: 'Map' },
+              { view: 'dungeons', icon: Skull, label: 'Dungeon' },
+              { view: 'arena', icon: Swords, label: 'PvP' },
+              { view: 'quests', icon: Scroll, label: 'Quests' },
+              { view: 'store', icon: ShoppingBag, label: 'Store' },
+              { view: 'blacksmith', icon: Hammer, label: 'Smith' },
+              { view: 'market', icon: Coins, label: 'Market' },
+              { view: 'notifications', icon: Bell, label: 'Notifications' },
+              { view: 'guild', icon: Users, label: 'Guild' },
+            ].map(item => (
+              <button 
+                key={item.view}
+                onClick={() => { setCurrentView(item.view as View); setIsMenuOpen(false); }}
+                className={`px-4 py-3 font-bangers text-xl uppercase whitespace-nowrap ${currentView === item.view ? 'bg-black text-white transform scale-105' : 'text-black hover:bg-gray-100'} transition-all flex items-center gap-3 rounded`}
+              >
+                <item.icon size={16}/> {item.label}
+              </button>
+            ))}
+          </div>
         </nav>
 
         <div className="flex-1 grid grid-cols-1 gap-6">
@@ -1036,6 +1345,7 @@ export default function App() {
             {currentView === 'store' && renderStore()}
             {currentView === 'blacksmith' && renderBlacksmith()}
             {currentView === 'market' && renderMarket()}
+            {currentView === 'notifications' && renderNotifications()}
             {currentView === 'arena' && renderArena()}
             {currentView === 'quests' && renderQuests()}
             {currentView === 'guild' && renderGuild()}

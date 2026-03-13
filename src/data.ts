@@ -5,10 +5,10 @@ export const MOCK_ITEMS: Item[] = [
   { id: 'w2', name: 'Laser Baton', type: 'weapon', rarity: 'uncommon', stats: { strength: 5, critChance: 5 }, price: 200, description: 'Zzzzap!', visualColor: '#00FFFF', visualIcon: '🔦' },
   { id: 'w3', name: 'Plasma Blade', type: 'weapon', rarity: 'rare', stats: { strength: 12, critChance: 10, lifesteal: 5 }, price: 800, description: 'Cuts through steel like butter.', visualColor: '#FF00FF', visualIcon: '🗡️' },
   { id: 'h1', name: 'Bandana', type: 'head', rarity: 'common', stats: { agility: 2, defense: 1 }, price: 30, description: 'Keeps sweat out of your eyes.', visualColor: '#FF0000', visualIcon: '🧢' },
-  { id: 'c1_armor', name: 'Leather Jacket', type: 'chest', rarity: 'uncommon', stats: { defense: 4, agility: 1 }, price: 80, description: 'Looks cool, stops some punches.', visualColor: '#8B4513', visualIcon: '🧥' },
-  { id: 'l1', name: 'Combat Boots', type: 'legs', rarity: 'common', stats: { defense: 2, agility: 2 }, price: 60, description: 'Good for kicking.', visualColor: '#000000', visualIcon: '🥾' },
-  { id: 'ac1', name: 'Lucky Coin', type: 'accessory', rarity: 'rare', stats: { critChance: 5, dodgeChance: 5 }, price: 300, description: 'A two-headed coin.', visualColor: '#FFD700', visualIcon: '🪙' },
-  { id: 'ac2', name: 'Vampire Ring', type: 'accessory', rarity: 'epic', stats: { lifesteal: 10 }, price: 600, description: 'Drains life from foes.', visualColor: '#8B0000', visualIcon: '💍' },
+  { id: 'c1_armor', name: 'Leather Jacket', type: 'body', rarity: 'uncommon', stats: { defense: 4, agility: 1 }, price: 80, description: 'Looks cool, stops some punches.', visualColor: '#8B4513', visualIcon: '🧥' },
+  { id: 'l1', name: 'Combat Boots', type: 'boots', rarity: 'common', stats: { defense: 2, agility: 2 }, price: 60, description: 'Good for kicking.', visualColor: '#000000', visualIcon: '🥾' },
+  { id: 'ac1', name: 'Lucky Coin', type: 'badge', rarity: 'rare', stats: { critChance: 5, dodgeChance: 5 }, price: 300, description: 'A two-headed coin.', visualColor: '#FFD700', visualIcon: '🪙' },
+  { id: 'ac2', name: 'Vampire Ring', type: 'ring', rarity: 'epic', stats: { lifesteal: 10 }, price: 600, description: 'Drains life from foes.', visualColor: '#8B0000', visualIcon: '💍' },
   { id: 'w4', name: 'God-Slayer Cannon', type: 'weapon', rarity: 'legendary', stats: { strength: 25, critChance: 20, agility: 5 }, price: 2500, description: 'A weapon from the old gods.', visualColor: '#FFD700', visualIcon: '☄️' },
   { id: 'c1', name: 'Health Potion', type: 'consumable', rarity: 'common', price: 25, description: 'Restores 50 HP.', effect: 'heal', effectValue: 50, visualIcon: '🧪' },
   { id: 'c2', name: 'Energy Drink', type: 'consumable', rarity: 'common', price: 40, description: 'Restores 20 Energy.', effect: 'energy', effectValue: 20, visualIcon: '🥤' },
@@ -49,7 +49,7 @@ export const MOCK_MERCENARIES: Mercenary[] = [
 ];
 
 export const MOCK_GUILDS: Guild[] = [
-  { id: 'g1', name: 'The Avengers', level: 5, gold: 10000, members: ['Nova Strike', 'Ironclad'], buildings: { hall: 2, training: 1 } },
+  { id: 'g1', name: 'The Avengers', level: 5, prestige: 1250, gold: 10000, members: [{ name: 'Nova Strike', role: 'leader' }, { name: 'Ironclad', role: 'member' }], buildings: { hall: 2, training: 1 } },
 ];
 
 export const MOCK_MARKET: { id: string, item: Item, seller: string, price: number }[] = [
